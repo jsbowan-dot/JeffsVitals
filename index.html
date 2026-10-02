@@ -1,0 +1,73 @@
+9:41
+
+
+
+Jeff's Vitals
+Record Daily Health Readings
+Latest Weight
+-- lbs
+No entries yet
+Latest Glucose
+-- mg/dL
+No entries yet
+
+New Vital Entry
+Date & Time
+Weight (lbs)
+Temperature (°F)
+Blood Pressure: Sitting (mmHg)
+
+
+Blood Pressure: Standing (mmHg)
+
+
+Glucose (mg/dL)
+Insulin (units)
+Notes / Symptoms
+Save Vital Entry
+Jeff's Vitals
+Spreadsheet View by Month
+Download CSV Copy
+
+0 Total Entries Reset Data
+Date
+Weight
+Temp
+BP (Sit)
+BP (Stand)
+Glucose
+Insulin
+Notes
+Action
+
+Trends & Analytics
+Averages and recent health progression
+Avg Weight
+-- lbs
+Avg Glucose
+-- mg/dL
+Recent Glucose Trajectory
+
+Bars represent your recorded glucose level entries sequentially over time.
+Cloud Sheet Sync
+Connect your app to your Google Spreadsheet
+Jeff's Vitals Cloud Sync
+Follow these simple steps to send every new vital entry directly into your Google Sheet named "Jeff's Vitals":
+	1	Open Google Sheets and create a spreadsheet named "Jeff's Vitals".
+	2	Name the first row headers: Date, Weight, Temp, BP Sit, BP Stand, Glucose, Insulin, Notes
+	3	In the top menu, click Extensions > Apps Script.
+	4	Paste the snippet code below, then click Deploy > New Deployment (Web app, execute as: Me, access: Anyone).
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    data.date, data.weight, data.temp, data.bpSit, 
+    data.bpStand, data.glucose, data.insulin, data.notes
+  ]);
+  return ContentService.createTextOutput(JSON.stringify({result: "success"}))
+         .setMimeType(ContentService.MimeType.JSON);
+}
+Your Google Apps Script Web App URL:
+Save
+Track Jeff's Vitals Trends Cloud Sync
+Action completed successfully!
