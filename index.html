@@ -1,73 +1,886 @@
-9:41
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jeff's Vitals</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --card: #ffffff;
+        --primary: #2d6cdf;
+        --primary-dark: #1f4fa8;
+        --accent: #50b3a6;
+        --muted: #6b7280;
+        --border: #dfe7f5;
+        --danger: #d93f3f;
+        --success: #198754;
+        --shadow: 0 10px 25px rgba(27, 40, 65, 0.08);
+      }
 
+      * { box-sizing: border-box; }
 
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: var(--bg);
+        color: #1f2937;
+      }
 
-Jeff's Vitals
-Record Daily Health Readings
-Latest Weight
--- lbs
-No entries yet
-Latest Glucose
--- mg/dL
-No entries yet
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
 
-New Vital Entry
-Date & Time
-Weight (lbs)
-Temperature (°F)
-Blood Pressure: Sitting (mmHg)
+      h1, h2, h3, h4, p {
+        margin-top: 0;
+      }
 
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
 
-Blood Pressure: Standing (mmHg)
+      .brand {
+        display: flex;
+        flex-direction: column;
+      }
 
+      .brand h1 {
+        font-size: clamp(2rem, 3vw, 2.8rem);
+        margin-bottom: 4px;
+      }
 
-Glucose (mg/dL)
-Insulin (units)
-Notes / Symptoms
-Save Vital Entry
-Jeff's Vitals
-Spreadsheet View by Month
-Download CSV Copy
+      .brand p {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
 
-0 Total Entries Reset Data
-Date
-Weight
-Temp
-BP (Sit)
-BP (Stand)
-Glucose
-Insulin
-Notes
-Action
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-bottom: 28px;
+      }
 
-Trends & Analytics
-Averages and recent health progression
-Avg Weight
--- lbs
-Avg Glucose
--- mg/dL
-Recent Glucose Trajectory
+      .stat-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px 18px;
+        box-shadow: var(--shadow);
+      }
 
-Bars represent your recorded glucose level entries sequentially over time.
-Cloud Sheet Sync
-Connect your app to your Google Spreadsheet
-Jeff's Vitals Cloud Sync
-Follow these simple steps to send every new vital entry directly into your Google Sheet named "Jeff's Vitals":
-	1	Open Google Sheets and create a spreadsheet named "Jeff's Vitals".
-	2	Name the first row headers: Date, Weight, Temp, BP Sit, BP Stand, Glucose, Insulin, Notes
-	3	In the top menu, click Extensions > Apps Script.
-	4	Paste the snippet code below, then click Deploy > New Deployment (Web app, execute as: Me, access: Anyone).
-function doPost(e) {
+      .stat-card .label {
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .stat-card .value {
+        font-size: clamp(1.8rem, 2vw, 2.2rem);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .stat-card .meta {
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        padding: 22px 18px;
+      }
+
+      .panel h2 {
+        font-size: 1.65rem;
+        margin-bottom: 18px;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field label {
+        font-weight: 700;
+        font-size: 0.95rem;
+      }
+
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: inherit;
+        background: #fff;
+      }
+
+      .field textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+
+      .button-row {
+        display: flex;
+        justify-content: center;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 18px;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.15s ease, opacity 0.15s ease;
+      }
+
+      button:hover { transform: translateY(-1px); }
+
+      .primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .secondary {
+        background: #eef4ff;
+        color: var(--primary-dark);
+      }
+
+      .danger {
+        background: #fff0f0;
+        color: var(--danger);
+      }
+
+      .middle-panel {
+        display: grid;
+        gap: 20px;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+
+      .section-header h2 {
+        margin-bottom: 0;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 760px;
+      }
+
+      th, td {
+        border-bottom: 1px solid var(--border);
+        padding: 10px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f8fafc;
+        color: var(--muted);
+        font-size: 0.83rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      td button {
+        padding: 7px 10px;
+        border-radius: 8px;
+      }
+
+      .empty {
+        color: var(--muted);
+        text-align: center;
+        padding: 22px 10px;
+      }
+
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .mini-stat {
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 14px;
+      }
+
+      .mini-stat .label {
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .mini-stat .value {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+
+      .chart-box {
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .chart-box p {
+        color: var(--muted);
+        margin-bottom: 12px;
+      }
+
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        min-height: 140px;
+        padding-top: 16px;
+      }
+
+      .bar {
+        flex: 1;
+        border-radius: 8px 8px 0 0;
+        background: linear-gradient(180deg, #7bc9d9, #3a91c9);
+        min-height: 6px;
+        position: relative;
+      }
+
+      .bar span {
+        position: absolute;
+        bottom: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.7rem;
+        color: var(--muted);
+      }
+
+      .sync-form {
+        display: grid;
+        gap: 12px;
+      }
+
+      .sync-form textarea,
+      .sync-form input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font: inherit;
+      }
+
+      .sync-code {
+        background: #111827;
+        border-radius: 10px;
+        color: #dfe7ff;
+        padding: 12px;
+        overflow-x: auto;
+        font-size: 0.83rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+      }
+
+      .status {
+        margin-top: 14px;
+        min-height: 20px;
+        font-weight: 700;
+      }
+
+      .status.success { color: var(--success); }
+      .status.error { color: var(--danger); }
+
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div class="brand">
+          <h1>Jeff's Vitals</h1>
+          <p>Record Daily Health Readings</p>
+        </div>
+      </header>
+
+      <section class="summary-grid" aria-label="Latest health summary">
+        <div class="stat-card">
+          <div class="label">Latest Weight</div>
+          <div id="latestWeight" class="value">-- lbs</div>
+          <div id="latestWeightMeta" class="meta">No entries yet</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="label">Latest Glucose</div>
+          <div id="latestGlucose" class="value">-- mg/dL</div>
+          <div id="latestGlucoseMeta" class="meta">No entries yet</div>
+        </div>
+      </section>
+
+      <main class="layout">
+        <section class="panel">
+          <h2>New Vital Entry</h2>
+
+          <form id="vitalForm" class="form-grid">
+            <div class="field">
+              <label for="date">Date &amp; Time</label>
+              <input id="date" name="date" type="datetime-local" required />
+            </div>
+
+            <div class="field">
+              <label for="weight">Weight (lbs)</label>
+              <input id="weight" name="weight" type="number" min="0" step="0.1" />
+            </div>
+
+            <div class="field">
+              <label for="temp">Temperature (°F)</label>
+              <input id="temp" name="temp" type="number" min="0" step="0.1" />
+            </div>
+
+            <div class="field">
+              <label for="bpSit">Blood Pressure: Sitting (mmHg)</label>
+              <input id="bpSit" name="bpSit" type="number" min="0" step="1" />
+            </div>
+
+            <div class="field">
+              <label for="bpStand">Blood Pressure: Standing (mmHg)</label>
+              <input id="bpStand" name="bpStand" type="number" min="0" step="1" />
+            </div>
+
+            <div class="field">
+              <label for="glucose">Glucose (mg/dL)</label>
+              <input id="glucose" name="glucose" type="number" min="0" step="1" />
+            </div>
+
+            <div class="field">
+              <label for="insulin">Insulin (units)</label>
+              <input id="insulin" name="insulin" type="number" min="0" step="0.1" />
+            </div>
+
+            <div class="field">
+              <label for="notes">Notes / Symptoms</label>
+              <textarea id="notes" name="notes" placeholder="Symptoms, stress, sleep, food, exercise..."></textarea>
+            </div>
+
+            <div class="button-row">
+              <button type="submit" class="primary">Save Vital Entry</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="middle-panel">
+          <div class="panel">
+            <div class="section-header">
+              <h2>Jeff's Vitals</h2>
+              <div class="toolbar">
+                <div class="filter-group">
+                  <label for="monthFilter">Spreadsheet View by Month</label>
+                  <input id="monthFilter" type="month" />
+                </div>
+                <button type="button" id="downloadCsvBtn" class="secondary">Download CSV Copy</button>
+              </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 8px; margin-bottom: 10px;">
+              <strong id="entryCount">0</strong>
+              <span style="color: var(--muted);">Total Entries</span>
+              <button type="button" id="resetBtn" class="danger">Reset Data</button>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Weight</th>
+                    <th>Temp</th>
+                    <th>BP (Sit)</th>
+                    <th>BP (Stand)</th>
+                    <th>Glucose</th>
+                    <th>Insulin</th>
+                    <th>Notes</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="entriesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Trends &amp; Analytics</h2>
+            <p style="color: var(--muted); margin-bottom: 14px;">Averages and recent health progression</p>
+
+            <div class="analytics-grid">
+              <div class="mini-stat">
+                <div class="label">Avg Weight</div>
+                <div id="avgWeight" class="value">-- lbs</div>
+              </div>
+
+              <div class="mini-stat">
+                <div class="label">Avg Glucose</div>
+                <div id="avgGlucose" class="value">-- mg/dL</div>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <h4>Recent Glucose Trajectory</h4>
+              <p>Bars represent your recorded glucose level entries sequentially over time.</p>
+              <div id="glucoseBars" class="bars" aria-label="Glucose trend bar chart"></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Cloud Sheet Sync</h2>
+            <p style="color: var(--muted); margin-bottom: 16px;">Connect your app to your Google Spreadsheet</p>
+
+            <div class="sync-form">
+              <h3 style="margin-bottom: 10px;">Jeff's Vitals Cloud Sync</h3>
+              <p style="margin-bottom: 8px; color: var(--muted);">
+                Follow these simple steps to send every new vital entry directly into your Google Sheet named "Jeff's Vitals":
+              </p>
+
+              <ol style="padding-left: 22px; color: var(--muted); margin: 0 0 14px; line-height: 1.7;">
+                <li>Open Google Sheets and create a spreadsheet named "Jeff's Vitals".</li>
+                <li>Name the first row headers: Date, Weight, Temp, BP Sit, BP Stand, Glucose, Insulin, Notes.</li>
+                <li>In the top menu, click Extensions &gt; Apps Script.</li>
+                <li>Paste the snippet code below, then click Deploy &gt; New Deployment (Web app, execute as: Me, access: Anyone).</li>
+              </ol>
+
+              <div class="sync-code">function doPost(e) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var data = JSON.parse(e.postData.contents);
   sheet.appendRow([
-    data.date, data.weight, data.temp, data.bpSit, 
+    data.date, data.weight, data.temp, data.bpSit,
     data.bpStand, data.glucose, data.insulin, data.notes
   ]);
   return ContentService.createTextOutput(JSON.stringify({result: "success"}))
-         .setMimeType(ContentService.MimeType.JSON);
-}
-Your Google Apps Script Web App URL:
-Save
-Track Jeff's Vitals Trends Cloud Sync
-Action completed successfully!
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+
+              <label for="sheetUrl" style="font-weight: 700;">Your Google Apps Script Web App URL:</label>
+              <input id="sheetUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" />
+              <div class="button-row" style="justify-content: flex-start;">
+                <button type="button" id="saveSyncBtn" class="primary">Save</button>
+              </div>
+            </div>
+
+            <div id="syncStatus" class="status success">Action completed successfully!</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const STORAGE_KEY = 'jeffsVitalsEntries';
+      const SYNC_URL_KEY = 'jeffsVitalsSyncUrl';
+
+      const form = document.getElementById('vitalForm');
+      const entriesBody = document.getElementById('entriesBody');
+      const monthFilter = document.getElementById('monthFilter');
+      const entryCount = document.getElementById('entryCount');
+      const latestWeight = document.getElementById('latestWeight');
+      const latestWeightMeta = document.getElementById('latestWeightMeta');
+      const latestGlucose = document.getElementById('latestGlucose');
+      const latestGlucoseMeta = document.getElementById('latestGlucoseMeta');
+      const avgWeight = document.getElementById('avgWeight');
+      const avgGlucose = document.getElementById('avgGlucose');
+      const glucoseBars = document.getElementById('glucoseBars');
+      const syncUrlInput = document.getElementById('sheetUrl');
+      const syncStatus = document.getElementById('syncStatus');
+
+      function loadEntries() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveEntries(entries) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      }
+
+      function getSyncUrl() {
+        return localStorage.getItem(SYNC_URL_KEY) || '';
+      }
+
+      function setSyncUrl(url) {
+        if (url) {
+          localStorage.setItem(SYNC_URL_KEY, url);
+        } else {
+          localStorage.removeItem(SYNC_URL_KEY);
+        }
+      }
+
+      function getSafeNumber(value) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+
+      function isoLocalDateTime(date) {
+        const pad = (n) => String(n).padStart(2, '0');
+        const d = new Date(date);
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
+      function formatDateTime(value) {
+        if (!value) return '—';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleString([], {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit'
+        });
+      }
+
+      function formatShortDate(value) {
+        if (!value) return '—';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+        return date.toLocaleDateString([], {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function normalizeEntry(rawEntry) {
+        return {
+          id: rawEntry.id || crypto.randomUUID(),
+          date: rawEntry.date || new Date().toISOString(),
+          weight: getSafeNumber(rawEntry.weight),
+          temp: getSafeNumber(rawEntry.temp),
+          bpSit: getSafeNumber(rawEntry.bpSit),
+          bpStand: getSafeNumber(rawEntry.bpStand),
+          glucose: getSafeNumber(rawEntry.glucose),
+          insulin: getSafeNumber(rawEntry.insulin),
+          notes: rawEntry.notes || ''
+        };
+      }
+
+      function getEntriesSorted() {
+        return [...loadEntries()].map(normalizeEntry).sort((a, b) => new Date(b.date) - new Date(a.date));
+      }
+
+      function renderSummary() {
+        const entries = getEntriesSorted();
+
+        const latest = entries[0] || null;
+        if (latest && latest.weight !== null) {
+          latestWeight.textContent = `${latest.weight.toFixed(1)} lbs`;
+          latestWeightMeta.textContent = formatDateTime(latest.date);
+        } else {
+          latestWeight.textContent = '-- lbs';
+          latestWeightMeta.textContent = 'No entries yet';
+        }
+
+        if (latest && latest.glucose !== null) {
+          latestGlucose.textContent = `${latest.glucose} mg/dL`;
+          latestGlucoseMeta.textContent = formatDateTime(latest.date);
+        } else {
+          latestGlucose.textContent = '-- mg/dL';
+          latestGlucoseMeta.textContent = 'No entries yet';
+        }
+      }
+
+      function renderAnalytics() {
+        const entries = getEntriesSorted();
+        const validWeightEntries = entries.filter((entry) => entry.weight !== null);
+        const validGlucoseEntries = entries.filter((entry) => entry.glucose !== null);
+
+        const avgWeightValue = validWeightEntries.length
+          ? validWeightEntries.reduce((sum, entry) => sum + entry.weight, 0) / validWeightEntries.length
+          : null;
+
+        const avgGlucoseValue = validGlucoseEntries.length
+          ? validGlucoseEntries.reduce((sum, entry) => sum + entry.glucose, 0) / validGlucoseEntries.length
+          : null;
+
+        avgWeight.textContent = avgWeightValue !== null ? `${avgWeightValue.toFixed(1)} lbs` : '-- lbs';
+        avgGlucose.textContent = avgGlucoseValue !== null ? `${Math.round(avgGlucoseValue)} mg/dL` : '-- mg/dL';
+
+        const chartEntries = validGlucoseEntries.slice(0, 12).reverse();
+        if (!chartEntries.length) {
+          glucoseBars.innerHTML = '<div class="empty" style="width:100%;">No glucose trend data yet.</div>';
+          return;
+        }
+
+        const maxValue = Math.max(...chartEntries.map((entry) => entry.glucose), 1);
+        glucoseBars.innerHTML = '';
+
+        chartEntries.forEach((entry) => {
+          const bar = document.createElement('div');
+          bar.className = 'bar';
+          bar.style.height = `${(entry.glucose / maxValue) * 100}%`;
+          bar.title = `${entry.glucose} mg/dL on ${formatShortDate(entry.date)}`;
+
+          const label = document.createElement('span');
+          label.textContent = entry.glucose;
+          bar.appendChild(label);
+          glucoseBars.appendChild(bar);
+        });
+      }
+
+      function renderTable() {
+        const entries = getEntriesSorted();
+        const selectedMonth = monthFilter.value;
+        const filteredEntries = selectedMonth
+          ? entries.filter((entry) => {
+              const d = new Date(entry.date);
+              const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+              return monthKey === selectedMonth;
+            })
+          : entries;
+
+        entryCount.textContent = String(filteredEntries.length);
+
+        if (!filteredEntries.length) {
+          entriesBody.innerHTML = `
+            <tr>
+              <td colspan="9" class="empty">No entries yet</td>
+            </tr>
+          `;
+          return;
+        }
+
+        entriesBody.innerHTML = filteredEntries.map((entry) => `
+          <tr>
+            <td>${escapeHtml(formatDateTime(entry.date))}</td>
+            <td>${entry.weight !== null ? `${entry.weight.toFixed(1)}` : '--'}</td>
+            <td>${entry.temp !== null ? `${entry.temp.toFixed(1)}` : '--'}</td>
+            <td>${entry.bpSit !== null ? `${entry.bpSit}` : '--'}</td>
+            <td>${entry.bpStand !== null ? `${entry.bpStand}` : '--'}</td>
+            <td>${entry.glucose !== null ? `${entry.glucose}` : '--'}</td>
+            <td>${entry.insulin !== null ? `${entry.insulin}` : '--'}</td>
+            <td>${escapeHtml(entry.notes || '')}</td>
+            <td><button type="button" class="danger" data-remove-id="${entry.id}">Delete</button></td>
+          </tr>
+        `).join('');
+      }
+
+      function renderAll() {
+        renderSummary();
+        renderAnalytics();
+        renderTable();
+      }
+
+      function resetData() {
+        const confirmed = window.confirm('Are you sure you want to delete all saved vitals?');
+        if (!confirmed) return;
+
+        localStorage.removeItem(STORAGE_KEY);
+        renderAll();
+        setSyncUrl(getSyncUrl());
+        showSyncStatus('Data reset successfully.', 'success');
+      }
+
+      function handleFormSubmit(event) {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const entry = normalizeEntry({
+          id: crypto.randomUUID(),
+          date: formData.get('date') || new Date().toISOString(),
+          weight: formData.get('weight'),
+          temp: formData.get('temp'),
+          bpSit: formData.get('bpSit'),
+          bpStand: formData.get('bpStand'),
+          glucose: formData.get('glucose'),
+          insulin: formData.get('insulin'),
+          notes: formData.get('notes') || ''
+        });
+
+        if (!entry.date) {
+          showSyncStatus('Please enter a date and time.', 'error');
+          return;
+        }
+
+        const entries = getEntriesSorted();
+        entries.push(entry);
+        saveEntries(entries);
+
+        const syncUrl = getSyncUrl();
+        if (syncUrl) {
+          syncEntryToGoogleSheet(entry, syncUrl);
+        }
+
+        form.reset();
+        const now = new Date();
+        document.getElementById('date').value = isoLocalDateTime(now);
+        renderAll();
+        showSyncStatus('Vital entry saved successfully.', 'success');
+      }
+
+      async function syncEntryToGoogleSheet(entry, url) {
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              date: entry.date,
+              weight: entry.weight,
+              temp: entry.temp,
+              bpSit: entry.bpSit,
+              bpStand: entry.bpStand,
+              glucose: entry.glucose,
+              insulin: entry.insulin,
+              notes: entry.notes
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+          }
+
+          showSyncStatus('Entry synced to Google Sheet successfully.', 'success');
+        } catch (error) {
+          showSyncStatus('Could not sync to Google Sheet. Check your Apps Script URL.', 'error');
+        }
+      }
+
+      function showSyncStatus(message, type) {
+        syncStatus.textContent = message;
+        syncStatus.className = `status ${type}`;
+      }
+
+      function saveSyncUrl() {
+        const url = syncUrlInput.value.trim();
+        if (!url) {
+          setSyncUrl('');
+          showSyncStatus('Cloud sync URL cleared.', 'success');
+          return;
+        }
+
+        setSyncUrl(url);
+        showSyncStatus('Google Apps Script URL saved.', 'success');
+      }
+
+      document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+        const entries = getEntriesSorted();
+        if (!entries.length) {
+          showSyncStatus('No entries to export yet.', 'error');
+          return;
+        }
+
+        const headers = ['Date', 'Weight', 'Temp', 'BP Sit', 'BP Stand', 'Glucose', 'Insulin', 'Notes'];
+        const rows = entries.map((entry) => [
+          entry.date,
+          entry.weight !== null ? entry.weight : '',
+          entry.temp !== null ? entry.temp : '',
+          entry.bpSit !== null ? entry.bpSit : '',
+          entry.bpStand !== null ? entry.bpStand : '',
+          entry.glucose !== null ? entry.glucose : '',
+          entry.insulin !== null ? entry.insulin : '',
+          entry.notes || ''
+        ]);
+
+        const csvContent = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(','))
+          .join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'jeffs-vitals.csv';
+        link.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', resetData);
+      document.getElementById('saveSyncBtn').addEventListener('click', saveSyncUrl);
+      form.addEventListener('submit', handleFormSubmit);
+      monthFilter.addEventListener('input', renderTable);
+
+      entriesBody.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-remove-id]');
+        if (!button) return;
+
+        const id = button.getAttribute('data-remove-id');
+        const entries = getEntriesSorted().filter((entry) => entry.id !== id);
+        saveEntries(entries);
+        renderAll();
+        showSyncStatus('Entry removed successfully.', 'success');
+      });
+
+      function initialize() {
+        const now = new Date();
+        document.getElementById('date').value = isoLocalDateTime(now);
+        syncUrlInput.value = getSyncUrl();
+        renderAll();
+      }
+
+      initialize();
+    </script>
+  </body>
+</html>
