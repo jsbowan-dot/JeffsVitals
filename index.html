@@ -54,8 +54,8 @@
 
       .form-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 18px 20px;
       }
 
       .field {
@@ -64,9 +64,36 @@
         gap: 8px;
       }
 
-      .field label {
+      .field-row {
+        grid-column: 1 / -1;
+      }
+
+      .field label,
+      .field-header {
         font-weight: 700;
         font-size: 0.96rem;
+      }
+
+      .field-header {
+        margin-bottom: 2px;
+      }
+
+      .double-inputs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .subfield {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .subfield label {
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-weight: 700;
       }
 
       .field input,
@@ -191,6 +218,14 @@
       }
 
       @media (max-width: 640px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .double-inputs {
+          grid-template-columns: 1fr;
+        }
+
         .entries-header {
           align-items: flex-start;
           flex-direction: column;
@@ -211,44 +246,60 @@
               <input id="dateTime" name="dateTime" type="datetime-local" required />
             </div>
 
-            <div class="field">
-              <label for="sittingSystolic">Sitting BP Systolic</label>
-              <input id="sittingSystolic" name="sittingSystolic" type="number" step="1" min="0" placeholder="e.g. 120" />
+            <div class="field field-row">
+              <div class="field-header">Sitting BP</div>
+              <div class="double-inputs">
+                <div class="subfield">
+                  <label for="sittingSystolic">Systolic</label>
+                  <input id="sittingSystolic" name="sittingSystolic" type="number" step="1" min="0" placeholder="e.g. 120" />
+                </div>
+                <div class="subfield">
+                  <label for="sittingDiastolic">Diastolic</label>
+                  <input id="sittingDiastolic" name="sittingDiastolic" type="number" step="1" min="0" placeholder="e.g. 80" />
+                </div>
+              </div>
             </div>
 
-            <div class="field">
-              <label for="sittingDiastolic">Sitting BP Diastolic</label>
-              <input id="sittingDiastolic" name="sittingDiastolic" type="number" step="1" min="0" placeholder="e.g. 80" />
+            <div class="field field-row">
+              <div class="field-header">Standing BP</div>
+              <div class="double-inputs">
+                <div class="subfield">
+                  <label for="standingSystolic">Systolic</label>
+                  <input id="standingSystolic" name="standingSystolic" type="number" step="1" min="0" placeholder="e.g. 118" />
+                </div>
+                <div class="subfield">
+                  <label for="standingDiastolic">Diastolic</label>
+                  <input id="standingDiastolic" name="standingDiastolic" type="number" step="1" min="0" placeholder="e.g. 79" />
+                </div>
+              </div>
             </div>
 
-            <div class="field">
-              <label for="standingSystolic">Standing BP Systolic</label>
-              <input id="standingSystolic" name="standingSystolic" type="number" step="1" min="0" placeholder="e.g. 118" />
+            <div class="field field-row">
+              <div class="field-header">Glucose &amp; Insulin</div>
+              <div class="double-inputs">
+                <div class="subfield">
+                  <label for="glucose">Glucose Level</label>
+                  <input id="glucose" name="glucose" type="number" step="1" min="0" placeholder="e.g. 110" />
+                </div>
+                <div class="subfield">
+                  <label for="insulin">Insulin</label>
+                  <input id="insulin" name="insulin" type="number" step="0.1" min="0" placeholder="e.g. 2.5" />
+                </div>
+              </div>
             </div>
 
-            <div class="field">
-              <label for="standingDiastolic">Standing BP Diastolic</label>
-              <input id="standingDiastolic" name="standingDiastolic" type="number" step="1" min="0" placeholder="e.g. 79" />
-            </div>
-
-            <div class="field">
-              <label for="temperature">Temperature (°F)</label>
-              <input id="temperature" name="temperature" type="number" step="0.1" min="0" placeholder="e.g. 98.6" />
-            </div>
-
-            <div class="field">
-              <label for="glucose">Glucose Level</label>
-              <input id="glucose" name="glucose" type="number" step="1" min="0" placeholder="e.g. 110" />
-            </div>
-
-            <div class="field">
-              <label for="insulin">Insulin</label>
-              <input id="insulin" name="insulin" type="number" step="0.1" min="0" placeholder="e.g. 2.5" />
-            </div>
-
-            <div class="field">
-              <label for="weight">Weight</label>
-              <input id="weight" name="weight" type="number" step="0.1" min="0" placeholder="e.g. 170.5" />
+            <div class="field field-row">
+              <div class="field-header">Temperature &amp; Weight</div>
+              <div class="double-inputs">
+                <div class="subfield">
+                  <label for="temperature">Temperature (°F)</label>
+                  <input id="temperature" name="temperature" type="number" step="0.1" min="0" placeholder="e.g. 98.6" />
+                </div>
+                <div class="subfield">
+                  <label for="weight">Weight</label>
+                  <input id="weight" name="weight" type="number" step="0.1" min="0" placeholder="e.g. 170.5" />
+                </div>
+              </div>
             </div>
 
             <div class="field full-width">
