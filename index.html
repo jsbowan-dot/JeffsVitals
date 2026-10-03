@@ -328,9 +328,9 @@
               <th>Date &amp; Time</th>
               <th>Sit BP</th>
               <th>Stand BP</th>
-              <th>Temp</th>
               <th>Glucose</th>
               <th>Insulin</th>
+              <th>Temp</th>
               <th>Weight</th>
               <th>Notes</th>
             </tr>
@@ -359,9 +359,9 @@
     data.sittingDiastolic,
     data.standingSystolic,
     data.standingDiastolic,
-    data.temperature,
     data.glucose,
     data.insulin,
+    data.temperature,
     data.weight,
     data.notes
   ]);
@@ -442,9 +442,9 @@
             <td>${entry.dateTime ? formatDate(entry.dateTime) : '—'}</td>
             <td>${entry.sittingSystolic !== '' ? entry.sittingSystolic : '—'}</td>
             <td>${entry.standingSystolic !== '' ? entry.standingSystolic : '—'}</td>
-            <td>${entry.temperature !== '' ? entry.temperature : '—'}</td>
             <td>${entry.glucose !== '' ? entry.glucose : '—'}</td>
             <td>${entry.insulin !== '' ? entry.insulin : '—'}</td>
+            <td>${entry.temperature !== '' ? entry.temperature : '—'}</td>
             <td>${entry.weight !== '' ? entry.weight : '—'}</td>
             <td>${entry.notes ? entry.notes : '—'}</td>
           </tr>
@@ -490,9 +490,9 @@
           sittingDiastolic: parseNumber(document.getElementById('sittingDiastolic').value),
           standingSystolic: parseNumber(document.getElementById('standingSystolic').value),
           standingDiastolic: parseNumber(document.getElementById('standingDiastolic').value),
-          temperature: parseNumber(document.getElementById('temperature').value),
           glucose: parseNumber(document.getElementById('glucose').value),
           insulin: parseNumber(document.getElementById('insulin').value),
+          temperature: parseNumber(document.getElementById('temperature').value),
           weight: parseNumber(document.getElementById('weight').value),
           notes: document.getElementById('notes').value.trim()
         };
